@@ -1,0 +1,97 @@
+﻿@page "/fetch"
+
+@using Inflow.Data
+@using Inflow.Data.Tieba
+
+@inject WeatherForecastService ForecastService
+
+<h1>Fetch</h1>
+
+<EditForm Model="model">
+
+    <InputSelect @bind-Value="model.kw">
+        @foreach (var kw in kws)
+        {
+            <option value="@kw">@kw</option>
+        }
+    </InputSelect>
+
+    <button class="btn btn-primary" @onclick="IncrementCount">Click me</button>
+
+</EditForm>
+
+@if (!string.IsNullOrWhiteSpace(Msg))
+{
+    <p>@Msg</p>
+}
+
+@if (Loadings.Any())
+{
+    @foreach (var loading in Loadings)
+    {
+        <p>@loading</p>
+    }
+}
+
+@if (Posts.Any() && !Loadings.Any())
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Title</th>
+                <th>TbName</th>
+                <th>Date</th>
+                <th>AuthName</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var post in Posts)
+            {
+                <tr>
+                    <td>@post.Title</td>
+                    <td>@post.TbName</td>
+                    <td>@post.Date</td>
+                    <td>@post.AuthName</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+
+
+@code {
+    private List<Post> Posts = new List<Post> { };
+    private List<string> Loadings = new List<string> { };
+
+    private List<string> kws = new List<string> { };
+    public string Msg { get; set; }
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        kws = @"石墨烯,3D打印".Split(',').ToList();
+    }
+
+    public Model model { get; set; } = new Model();
+    private void IncrementCount()
+    {
+        Task.Run(async () =>
+        {
+            for (int i = 1; i <= 10; i++)
+            {
+                Loadings.Add($"load page {i} ...");
+                var pagePosts = TiebaService.GetPosts(model.kw, i);
+                Posts.AddRange(pagePosts);
+                await InvokeAsync(StateHasChanged);
+            }
+            Loadings.Clear();
+            await InvokeAsync(StateHasChanged);
+        });
+    }
+
+    public class Model
+    {
+        public string kw { get; set; }
+    }
+}

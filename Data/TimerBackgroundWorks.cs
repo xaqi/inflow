@@ -19,6 +19,7 @@ namespace Inflow.Data
         }
         private void DoWork(Object state)
         {
+            if (TimerWorkLog.Length > 2000) TimerWorkLog.Clear();
             TimerWorkLog.AppendLine($"timer work on {DateTime.Now}");
         }
     }
