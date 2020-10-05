@@ -5,6 +5,7 @@
 
 <button class="btn btn-primary" @onclick="IncrementCount">Click me</button>
 
+
 <p> Current count: </p>
 <p> @((MarkupString)html) </p>
 
@@ -14,6 +15,16 @@
     private void IncrementCount()
     {
         html = TiebaService.Get("中文").ToString();
-        html = TimerBackgroundWorks.TimerWorkLog.ToString().Replace("\n", "\n <br />");
+        //html = TimerBackgroundWorks.TimerWorkLog.ToString().Replace("\n", "\n <br />");
+
+        Task.Run(async () =>
+        {
+            for (int i = 1; i <= 10; i++)
+            {
+                html = i.ToString();
+                await InvokeAsync(StateHasChanged);
+                await Task.Delay(500);
+            }
+        });
     }
 }
