@@ -1,16 +1,19 @@
 ﻿@page "/counter"
+@using Inflow.Data;
 
 <h1>Counter</h1>
 
-<p>Current count: @currentCount</p>
-
 <button class="btn btn-primary" @onclick="IncrementCount">Click me</button>
 
+<p> Current count: </p>
+<p> @((MarkupString)html) </p>
+
 @code {
-    private int currentCount = 0;
+    private string html = string.Empty;
 
     private void IncrementCount()
     {
-        currentCount++;
+        html = TiebaService.Get("中文").ToString();
+        html = TimerBackgroundWorks.TimerWorkLog.ToString().Replace("\n", "\n <br />");
     }
 }
